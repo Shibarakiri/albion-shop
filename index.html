@@ -27,7 +27,6 @@
     min-height: 100vh;
   }
 
-  /* HEADER */
   header {
     background: linear-gradient(180deg, #0a0c10 0%, var(--dark) 100%);
     border-bottom: 1px solid var(--border);
@@ -89,10 +88,8 @@
   }
 
   .discord-badge:hover { background: rgba(88,101,242,0.28); }
-
   .discord-badge svg { width: 16px; height: 16px; fill: currentColor; }
 
-  /* FILTERS */
   .filters {
     display: flex;
     justify-content: center;
@@ -121,7 +118,6 @@
     color: var(--gold);
   }
 
-  /* GRID */
   main {
     max-width: 1200px;
     margin: 0 auto;
@@ -177,18 +173,6 @@
     display: block;
   }
 
-  .item-img-placeholder {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: var(--surface2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 1px;
-  }
-
   .item-info {
     padding: 0.85rem 1rem;
     border-top: 1px solid var(--border);
@@ -227,19 +211,6 @@
     letter-spacing: 1px;
   }
 
-  .sold-badge {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    background: rgba(255,255,255,0.05);
-    color: var(--muted);
-    padding: 2px 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  /* EMPTY */
   .empty-state {
     grid-column: 1 / -1;
     text-align: center;
@@ -250,7 +221,6 @@
     display: none;
   }
 
-  /* FOOTER */
   footer {
     text-align: center;
     padding: 2rem;
@@ -274,6 +244,98 @@
 
   .contact-cta a:hover { color: var(--gold-light); }
 
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.92);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .lightbox.open { display: flex; }
+
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 75vh;
+    object-fit: contain;
+    border: 1px solid var(--border);
+  }
+
+  .lightbox-info {
+    margin-top: 1.25rem;
+    text-align: center;
+  }
+
+  .lightbox-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .lightbox-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+  }
+
+  .lightbox-price .currency {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--muted);
+    font-family: 'Lato', sans-serif;
+    margin-left: 4px;
+    letter-spacing: 1px;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 1.4rem;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+    line-height: 1;
+  }
+
+  .lightbox-close:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .lightbox-discord {
+    margin-top: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(88,101,242,0.15);
+    border: 1px solid rgba(88,101,242,0.4);
+    color: #8a9ff5;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 7px 18px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .lightbox-discord:hover { background: rgba(88,101,242,0.28); }
+  .lightbox-discord svg { width: 15px; height: 15px; fill: currentColor; }
+
   @media (max-width: 480px) {
     .grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     header { padding: 1.5rem 1rem; }
@@ -293,12 +355,12 @@
 </header>
 
 <div class="filters">
-  <button class="filter-btn active" onclick="filterItems('tous')">All</button>
-  <button class="filter-btn" onclick="filterItems('arme')">Gucci Items</button>
-  <button class="filter-btn" onclick="filterItems('armure')">Battlemounts</button>
-  <button class="filter-btn" onclick="filterItems('ressource')">Awaken Weapons</button>
-  <button class="filter-btn" onclick="filterItems('monture')">Ressources</button>
-  <button class="filter-btn" onclick="filterItems('autre')">Other</button>
+  <button class="filter-btn active" onclick="filterItems('tous', event)">All</button>
+  <button class="filter-btn" onclick="filterItems('gucci', event)">Gucci Items</button>
+  <button class="filter-btn" onclick="filterItems('battlemount', event)">Battlemounts</button>
+  <button class="filter-btn" onclick="filterItems('awaken', event)">Awaken Weapons</button>
+  <button class="filter-btn" onclick="filterItems('ressource', event)">Resources</button>
+  <button class="filter-btn" onclick="filterItems('autre', event)">Other</button>
 </div>
 
 <main>
@@ -307,52 +369,86 @@
   <div class="grid" id="grid">
 
     <!-- ============================================================
-         EXEMPLES D'ARTICLES — modifiez ou supprimez ces cartes
-         Pour ajouter un article, copiez un bloc <div class="item-card..."> ci-dessous
-         ============================================================ -->
+         POUR AJOUTER UN ARTICLE : copiez un bloc item-card ci-dessous.
+         Changez :
+           data-cat="..."     → gucci / battlemount / awaken / ressource / autre
+           src="..."          → lien imgur ou render.albiononline.com
+           item-category      → nom de la catégorie affiché
+           item-name          → nom de l'article
+           item-price         → prix (supprimez la ligne si pas de prix)
+    ============================================================ -->
 
-    <!-- Article avec IMAGE (remplacez le src par le lien de votre image) -->
-    <div class="item-card visible" data-cat="arme">
+    <div class="item-card visible" data-cat="gucci"
+         data-name="Bâton maudit T8 · Qualité sup."
+         data-price="2 500 000"
+         data-img="https://render.albiononline.com/v1/item/T8_2H_CURSEDSTAFF_MORGANA.png"
+         onclick="openLightbox(this)">
       <img class="item-img" src="https://render.albiononline.com/v1/item/T8_2H_CURSEDSTAFF_MORGANA.png" alt="Bâton maudit T8">
       <div class="item-info">
-        <div class="item-category">Arme</div>
+        <div class="item-category">Gucci Item</div>
         <div class="item-name">Bâton maudit T8 · Qualité sup.</div>
-        <div class="item-price">2 500 000 <span class="currency">argent</span></div>
+        <div class="item-price">2 500 000 <span class="currency">silver</span></div>
       </div>
     </div>
 
-    <div class="item-card visible" data-cat="armure">
+    <div class="item-card visible" data-cat="battlemount"
+         data-name="Armure cuir T8 · Set complet"
+         data-price="3 800 000"
+         data-img="https://render.albiononline.com/v1/item/T8_ARMOR_LEATHER_SET2.png"
+         onclick="openLightbox(this)">
       <img class="item-img" src="https://render.albiononline.com/v1/item/T8_ARMOR_LEATHER_SET2.png" alt="Armure cuir T8">
       <div class="item-info">
-        <div class="item-category">Armure</div>
+        <div class="item-category">Battlemount</div>
         <div class="item-name">Armure cuir T8 · Set complet</div>
-        <div class="item-price">3 800 000 <span class="currency">argent</span></div>
+        <div class="item-price">3 800 000 <span class="currency">silver</span></div>
       </div>
     </div>
 
-    <div class="item-card visible" data-cat="ressource">
+    <div class="item-card visible" data-cat="ressource"
+         data-name="Peau brute T8 · x500"
+         data-price="900 000"
+         data-img="https://render.albiononline.com/v1/item/T8_HIDE.png"
+         onclick="openLightbox(this)">
       <img class="item-img" src="https://render.albiononline.com/v1/item/T8_HIDE.png" alt="Peau T8">
       <div class="item-info">
-        <div class="item-category">Ressource</div>
+        <div class="item-category">Resource</div>
         <div class="item-name">Peau brute T8 · x500</div>
-        <div class="item-price">900 000 <span class="currency">argent</span></div>
+        <div class="item-price">900 000 <span class="currency">silver</span></div>
       </div>
     </div>
 
-    <div class="item-card visible" data-cat="monture">
+    <div class="item-card visible" data-cat="awaken"
+         data-name="Cheval de guerre T8"
+         data-price="1 200 000"
+         data-img="https://render.albiononline.com/v1/item/T8_MOUNT_HORSE.png"
+         onclick="openLightbox(this)">
       <img class="item-img" src="https://render.albiononline.com/v1/item/T8_MOUNT_HORSE.png" alt="Cheval T8">
       <div class="item-info">
-        <div class="item-category">Monture</div>
+        <div class="item-category">Awaken Weapon</div>
         <div class="item-name">Cheval de guerre T8</div>
-        <div class="item-price">1 200 000 <span class="currency">argent</span></div>
+        <div class="item-price">1 200 000 <span class="currency">silver</span></div>
       </div>
     </div>
-   
+
     <!-- ============================================================ -->
 
-    <div class="empty-state" id="empty">No Items in this category.</div>
+    <div class="empty-state" id="empty">No items in this category.</div>
   </div>
 </main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOutside(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <div class="lightbox-info">
+    <div class="lightbox-name" id="lightbox-name"></div>
+    <div class="lightbox-price" id="lightbox-price"></div>
+    <a class="lightbox-discord" href="https://discord.com/users/779715435225808898" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.114 18.1.131 18.112a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      Contact to buy on Discord
+    </a>
+  </div>
+</div>
 
 <footer>
   <div>© 2026 Shibarakiri — Unofficial store Albion Online</div>
@@ -362,10 +458,9 @@
 </footer>
 
 <script>
-function filterItems(cat) {
+function filterItems(cat, e) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-
+  e.currentTarget.classList.add('active');
   const cards = document.querySelectorAll('.item-card');
   let visible = 0;
   cards.forEach(c => {
@@ -373,10 +468,40 @@ function filterItems(cat) {
     c.classList.toggle('visible', show);
     if (show) visible++;
   });
-
   document.getElementById('empty').style.display = visible === 0 ? 'block' : 'none';
 }
+
+function openLightbox(card) {
+  const img = card.dataset.img;
+  const name = card.dataset.name;
+  const price = card.dataset.price;
+  document.getElementById('lightbox-img').src = img;
+  document.getElementById('lightbox-img').alt = name;
+  document.getElementById('lightbox-name').textContent = name;
+  const priceEl = document.getElementById('lightbox-price');
+  if (price) {
+    priceEl.innerHTML = price + ' <span class="currency">silver</span>';
+  } else {
+    priceEl.innerHTML = '';
+  }
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeLightboxOutside(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
 </script>
 
 </body>
 </html>
+
